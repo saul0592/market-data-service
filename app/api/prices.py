@@ -3,7 +3,7 @@ from datetime import datetime
 
 router = APIRouter()
 
-@router.get("/prices/latest")
+@router.get("/mock/prices/latest")
 async def get_latest_price(symbol: str, provider: str = Query("yfinance")):
     return {
         "symbol" : symbol.upper(),
