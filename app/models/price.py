@@ -1,16 +1,25 @@
+import uuid
 from sqlalchemy import Column, String, Float, DateTime, Integer
 from sqlalchemy.dialects.postgresql import UUID
-from app.core.database import Base
-import uuid
+from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from app.core.database import Base 
+from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
+
+router = APIRouter()
+
+
 
 class Price(Base):
     __tablename__ = "prices"
+    symbol = Column(String, primary_key=True)
+    provider = Column(String, primary_key=True)
+    timestamp = Column(DateTime, primary_key=True)
+    price = Column(Float)
 
-    symbol= Column(String, primary_key=True)
-    price = Column(Float, nullable= False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
-    provider = Column(String, nullable=False)
+
+
 
 class RawMarketData(Base):
     __tablename__ = "raw_market_data"

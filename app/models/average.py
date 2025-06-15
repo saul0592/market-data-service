@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Float, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.core.database import Base
+from datetime import datetime
 
 class MovingAverage(Base):
     __tablename__ = "symbol_averages"

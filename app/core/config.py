@@ -5,13 +5,13 @@ class Settings(BaseSettings):
     DB_PASSWORD : str = "secret"
     DB_HOST : str = "db"
     DB_PORT : str = "5432"
-    DB_NAME : str = "maket_data"
+    DB_NAME : str = "market_data"
 
     @property
     def database_url(self):
         return (
-            f"postgresql://{self.DB_USER}: {self.DB_PASSWORD}"
-            f"@{self.DB_HOST}: {self.DB_PORT}/{self.DB_NAME}"
+            f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}"
+            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
 
 settings = Settings()

@@ -10,7 +10,7 @@ class PriceResponse(BaseModel):
 
 class PollRequest(BaseModel):
     symbols: List[str]
-    interval : int
+    interval : Optional[str]=None
     provider : str
 
 class PollResponse(BaseModel):

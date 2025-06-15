@@ -1,20 +1,20 @@
-# Usa imagen oficial de Python
+
 FROM python:3.11-slim
 
-# Establece el directorio de trabajo
+# work directory
 WORKDIR /app
 
-# Copia el archivo de requerimientos
+# Copy the file requirements
 COPY requirements.txt .
 
-# Instala dependencias
+# install dependences
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todo el código fuente al contenedor
+# Cpy all the code
 COPY . .
 
-# Expone el puerto que usa FastAPI (8000)
+# Eposig using FastAPI(8000) 
 EXPOSE 8000
 
-# Comando para correr la app con uvicorn
+# Comand to run the app with uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

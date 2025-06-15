@@ -7,6 +7,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+#Consumer run with python and his script
 
-# El consumidor se ejecuta con python y tu script principal
 CMD ["python", "run_consumer.py"]
