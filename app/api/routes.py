@@ -4,6 +4,7 @@ from app.schemas.price import PriceResponse, PollRequest, PollResponse
 from app.services.price_service import get_latest_price, save_raw_market_data, save_price
 from app.services.market_data_provider import fetch_alpha_vantage_price
 from app.core.database import get_db
+from app.services.kafka_producer import produce_price_event
 
 router = APIRouter()
 
@@ -20,7 +21,7 @@ async def get_latest_price_route(
 
 @router.post("/prices/poll", response_model=PollResponse, status_code=202)
 async def poll_prices(data: PollRequest, db: AsyncSession = Depends(get_db)):
-    print("▶️ poll_prices llamado")
+    print(" poll_prices llamado")
     print(f" Request recibida: {data}")
 
     try:
@@ -29,11 +30,21 @@ async def poll_prices(data: PollRequest, db: AsyncSession = Depends(get_db)):
             fetched_data = await fetch_alpha_vantage_price(symbol)
             print(f"Data: {fetched_data}")
 
-            await save_raw_market_data(fetched_data, db)
+            raw_data = await save_raw_market_data(fetched_data, db)
             print("Data saved")
 
-            await save_price(fetched_data, db)
+            saved_price = await save_price(fetched_data, db)
             print(" Price saved")
+            
+            event_data = {
+                "symbol" : saved_price.symbol,
+                "price" : saved_price.price,
+                "timestamp" : saved_price.timestamp.isoformat(),
+                "source" : save_price.provider,
+                "raw_response_id": str(raw_data.id)
+            }
+            produce_price_event(event_data)
+            print("Event to Kafka")
     except Exception as e:
         print(f" Error in poll_prices: {e}")
         raise HTTPException(status_code=500, detail="Fail polling")

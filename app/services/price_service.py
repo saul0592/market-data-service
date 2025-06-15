@@ -28,7 +28,18 @@ async def save_raw_market_data(data: dict, db: AsyncSession):
     db.add(raw_data)
     await db.commit()
     await db.refresh(raw_data)
+
+    price_event = {
+        "symbol": raw_data.symbol,
+        "price": raw_data.price,
+        "timestamp": raw_data.timestamp.isoformat(),
+        "source": raw_data.provider,
+        "raw_response_id": str(raw_data.id),
+    }
+    produce_price_event(price_event)
+
     return raw_data
+
 
 
 async def save_price(data: dict, db: AsyncSession):
