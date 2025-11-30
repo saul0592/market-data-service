@@ -1,75 +1,89 @@
-##Market Data Service
+# 📈 Market Data Service (Microservice)
 
-This project is a microservice to consume andproduce event of price using Kafka, API REST with FastAPI.
+> High-performance microservice designed to ingest, process, and stream real-time financial market data using **Apache Kafka** and **FastAPI**.
 
-I'm a currently student of Computer Science at BMCC eager to grow my potential as a software enginer thourgh internships and real-world experience.
+## 🚀 Overview
+This project simulates a production-grade backend architecture for financial systems. It acts as a scalable microservice that consumes market prices via Kafka events, persists data asynchronously, and exposes real-time information through a REST API.
 
-##Technologies
+**Key Features:**
+* **Event-Driven Architecture:** Uses **Apache Kafka** (Confluent) for high-throughput data streaming.
+* **Async Processing:** Implemented with **SQLAlchemy Async** for non-blocking database operations.
+* **Containerized:** Fully dockerized environment for consistent deployment.
+* **RESTful API:** Built with **FastAPI** for high performance and auto-documentation.
 
-- Python 3.8+
-- FastAPI
-- Kafka (Confluent)
-- PostgreSQL
-- SQLAlchemy Async
-- Docker y Docker Compose
+## 🛠️ Tech Stack
+* **Language:** Python 3.8+
+* **Framework:** FastAPI
+* **Streaming:** Apache Kafka (Confluent) & Zookeeper
+* **Database:** PostgreSQL (Async)
+* **ORM:** SQLAlchemy (Async)
+* **DevOps:** Docker & Docker Compose
 
-##Requirements
+## ⚡ Quick Start (Docker)
+The easiest way to run the service is using Docker Compose. This will set up the API, Database, Zookeeper, and Kafka automatically.
 
-- Docker y Docker Compose
-- Python 3.8+
-- Kafka (Confluent Kafka) and PostgreSQL
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/saul0592/market-data-service.git](https://github.com/saul0592/market-data-service.git)
+    cd market-data-service
+    ```
 
-## Instalation
+2.  **Build and Run:**
+    ```bash
+    docker-compose up --build
+    ```
 
-1. Clone the repository 
+3.  **Access the API:**
+    * **Swagger UI (Docs):** Visit `http://localhost:8000/docs` to test endpoints.
+    * **Base URL:** `http://localhost:8000`
 
-git clone https://github.com/saul0592/market-data-service.git
-cd market-data-service
+## 📦 Manual Installation (Local Dev)
+If you prefer running it without Docker containers:
 
-2. Create your own enviroment:
+1.  **Environment Setup:**
+    ```bash
+    python -m venv venv
+    # Windows:
+    source venv/Scripts/activate
+    # Mac/Linux:
+    source venv/bin/activate
+    ```
 
-python -m venv venv
-source venv/bin/activate
+2.  **Install Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-3. Install the dependences
-pip install -r requirements.txt
+3.  **Run Services:**
+    * Ensure PostgreSQL and Kafka are running locally.
+    * **Start API:**
+        ```bash
+        uvicorn app.main:app --reload
+        ```
+    * **Start Consumer:**
+        ```bash
+        python run_consumer.py
+        ```
 
-5. Run the servers database, Kafka and Zookeeper
+## 📡 API Endpoints
 
-6. Beging the API:
+| Method | Endpoint | Description |
+| `GET` | `/prices/latest` | Get the latest price for a specific symbol. |
 
-uvicorn app.main:app --reload
+**Example Request:**
+`GET /prices/latest?symbol=AAPL&provider=alpha_vantage`
 
-7. Run Kafka Consume:
-
-python run_consumer.py
-
----To Build the Docker Compose--
-
-docker-compose up --build
-
----EndPoint--
-
-GET /prices/latest?symbol=XXX&provider=YYY--> it will obtain the last price of a symbol and provider
-
----Project structure---
-
+## 📂 Project Structure
+```text
 app/
- ├── services/           # Logic 
- ├── models/             # Model SQLAlchemy
- ├── core/               # settings and utilities
- ├── schemas/            # Schemas Pydantic
- └── main.py             # Start FastAPI
-run_consumer.py          # Consumer Script Kafka
-docker-compose.yml       # settings containers
-requirements.txt         # Python dependences
-
----Considerations--
-
-Data base has to be run before to initiate the services
-Kafka should be available and running
-
----Conctact--
+├── core/       # Configuration settings and utilities
+├── models/     # SQLAlchemy database models
+├── schemas/    # Pydantic schemas for validation
+├── services/   # Business logic
+└── main.py     # FastAPI application entry point
+run_consumer.py # Kafka consumer script
+docker-compose.yml
+requirements.txt
 
 
 Saul Mendoza
