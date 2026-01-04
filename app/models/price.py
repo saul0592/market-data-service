@@ -56,3 +56,7 @@ class PollingJobConfig(Base):
     interval= Column(Integer, nullable=False)
     provider = Column(String, nullable=False)
     create_at = Column(DateTime, default=datetime.utcnow)
+
+class PriceMessage(BaseModel):
+    symbol: str
+    price: float

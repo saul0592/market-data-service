@@ -6,7 +6,7 @@ cffi==1.17.1
 charset-normalizer==3.4.2
 click==8.2.1
 curl_cffi==0.11.3
-
+kafka-python==2.0.2
 frozendict==2.4.6
 greenlet==3.2.3
 h11>=0.13,<0.15
@@ -42,3 +42,4 @@ confluent-kafka==2.1.1
 pydantic-settings
 asyncpg>=0.27.0,<1.0
 httpx==0.24.1
+confluent-kafka

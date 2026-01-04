@@ -3,14 +3,15 @@
                     +------------+------------+
                                  |
                                  v
-                     GET /prices/latest?...
+                     GET /mock/prices/latest?...
+                     POST /send-price {symbol, price}
                                  |
                       +----------v----------+
                       |      FastAPI        |
                       |    (app.main)       |
                       +----------+----------+
                                  |
-                     Publish to Kafka Topic: price-events
+                     Publish to Kafka Topic: test-topic
                                  |
                       +----------v----------+
                       |       Kafka         |
@@ -20,7 +21,7 @@
                                  v
            +-----------------------------+
            | Kafka Consumer (Python)     |
-           | - Calculates Moving Average |
+           | - Processes messages        |
            | - Writes to PostgreSQL      |
            +--------------+--------------+
                           |
@@ -28,5 +29,5 @@
                +---------------------+
                |     PostgreSQL      |
                |  - Prices Table     |
-               |  - Averages Table   |
+               |  - Optional Stats   |
                +---------------------+

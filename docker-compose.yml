@@ -1,31 +1,56 @@
-version: "3.8"
-
 services:
   api:
     build: .
+    working_dir: /app
     ports:
       - "8000:8000"
+    volumes:
+      - ./:/app
     environment:
       DATABASE_URL: postgresql+asyncpg://saul:secret@postgres:5432/market_data
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ALPHA_VANTAGE_API_KEY: "XB56ZK08462X9DFC"
     depends_on:
-      - postgres
-      - kafka
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: on-failure
 
   consumer:
     build:
       context: .
       dockerfile: Dockerfile.consumer
+    working_dir: /app
+    volumes:
+      - ./:/app
     environment:
       DATABASE_URL: postgresql+asyncpg://saul:secret@postgres:5432/market_data
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
-      - kafka
-      - postgres
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    restart: on-failure
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/commands/srvr || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: confluentinc/cp-kafka:7.3.1
+    container_name: market-data-service-kafka-1
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -37,14 +62,14 @@ services:
       - "9092:9092"
       - "29092:29092"
     depends_on:
-      - zookeeper
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.1
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    ports:
-      - "2181:2181"
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   postgres:
     image: postgres:15
@@ -54,8 +79,13 @@ services:
       POSTGRES_DB: market_data
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U saul"]
+      test: ["CMD-SHELL", "pg_isready -U saul -d market_data"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+volumes:
+  postgres_data:
